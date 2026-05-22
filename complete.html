@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주문완료 — 라이브박스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#F7F5F2;--charcoal:#1E1E1E;--gray:#8A8885;--accent:#A8825A;--white:#FFF;--live:#E8392A;--border:rgba(30,30,30,.1);--sans:'Noto Sans KR',sans-serif;--serif:'Cormorant Garamond',serif}
+body{font-family:var(--sans);background:var(--cream);color:var(--charcoal);font-size:14px;min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--white);border-bottom:.5px solid var(--border)}
+.header-inner{max-width:700px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:center;height:60px}
+.logo-name{font-size:17px;font-weight:700;color:var(--charcoal)}
+.logo-name span{color:var(--live)}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.card{background:var(--white);border:.5px solid var(--border);max-width:560px;width:100%;padding:48px 40px;text-align:center}
+.check-circle{width:64px;height:64px;background:var(--charcoal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.check-circle svg{width:28px;height:28px;stroke:white;fill:none;stroke-width:2.5}
+.complete-title{font-family:var(--serif);font-size:32px;font-weight:300;font-style:italic;margin-bottom:8px;color:var(--charcoal)}
+.complete-sub{font-size:13px;color:var(--gray);margin-bottom:32px;line-height:1.7}
+.order-box{background:var(--cream);padding:20px;margin-bottom:24px;text-align:left}
+.order-box-title{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gray);text-transform:uppercase;margin-bottom:14px}
+.order-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px}
+.order-row:last-child{margin-bottom:0}
+.order-row .label{color:var(--gray)}
+.order-row .val{font-weight:500}
+.order-row.highlight .val{color:var(--live);font-weight:700;font-size:15px}
+.items-list{text-align:left;margin-bottom:24px}
+.order-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:.5px solid var(--border);font-size:13px}
+.order-item:last-child{border-bottom:none}
+.item-n{color:var(--charcoal)}
+.item-p{font-weight:500}
+.btn-home{display:inline-block;background:var(--charcoal);color:white;padding:13px 40px;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.08em;cursor:pointer;transition:background .2s;margin-right:10px;border:none}
+.btn-home:hover{background:var(--live)}
+.btn-more{display:inline-block;background:none;border:1.5px solid var(--border);color:var(--charcoal);padding:11px 32px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-more:hover{border-color:var(--charcoal)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeUp .5s ease forwards}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo-name">라이브<span>박스</span></div></div></header>
+<div class="wrap">
+  <div class="card" id="complete-card">
+    <div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="complete-title">주문이 완료되었습니다!</div>
+    <div class="complete-sub">감사합니다. 주문이 정상적으로 접수되었어요.<br>빠르게 준비해서 보내드릴게요.</div>
+    <div class="order-box" id="order-summary"></div>
+    <div class="items-list" id="order-items-list"></div>
+    <div>
+      <button class="btn-home" onclick="location.href='index.html'">홈으로</button>
+      <button class="btn-more" onclick="location.href='index.html'">쇼핑 계속하기</button>
+    </div>
+  </div>
+</div>
+<script src="store.js"></script>
+<script>
+const order = JSON.parse(sessionStorage.getItem('lb_last_order')||'null');
+if(!order){ location.href='index.html'; }
+else {
+  const methodMap = {card:'신용/체크카드',kakao:'카카오페이',naver:'네이버페이',toss:'토스페이',bank:'무통장입금',phone:'휴대폰결제'};
+  document.getElementById('order-summary').innerHTML=`
+    <div class="order-box-title">주문 정보</div>
+    <div class="order-row"><span class="label">주문번호</span><span class="val" style="font-family:monospace">${order.id}</span></div>
+    <div class="order-row"><span class="label">주문일시</span><span class="val">${order.date}</span></div>
+    <div class="order-row"><span class="label">받는 분</span><span class="val">${order.recv}</span></div>
+    <div class="order-row"><span class="label">배송지</span><span class="val">${order.addr}</span></div>
+    <div class="order-row"><span class="label">결제수단</span><span class="val">${methodMap[order.method]||order.method}</span></div>
+    <div class="order-row highlight"><span class="label">결제금액</span><span class="val">${order.amount.toLocaleString()}원</span></div>`;
+
+  document.getElementById('order-items-list').innerHTML =
+    (order.items||[]).map(item=>`
+      <div class="order-item">
+        <span class="item-n">${item.name} × ${item.qty}</span>
+        <span class="item-p">${(item.price*item.qty).toLocaleString()}원</span>
+      </div>`).join('');
+}
+</script>
+</body>
+</html>

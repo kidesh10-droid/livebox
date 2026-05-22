@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공지사항 — 라이브박스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#F7F5F2;--charcoal:#1E1E1E;--gray:#8A8885;--accent:#A8825A;--white:#FFF;--live:#E8392A;--border:rgba(30,30,30,.1);--sans:'Noto Sans KR',sans-serif}
+body{font-family:var(--sans);background:var(--cream);color:var(--charcoal);font-size:14px}
+a{text-decoration:none;color:inherit}
+header{background:var(--white);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:100}
+.header-inner{max-width:900px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:34px;height:34px;background:var(--charcoal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;border-radius:4px}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-.02em}
+.logo-name span{color:var(--live)}
+.page-wrap{max-width:900px;margin:0 auto;padding:40px 40px 80px}
+.page-title{font-size:22px;font-weight:700;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid var(--charcoal)}
+.notice-tabs{display:flex;gap:0;margin-bottom:20px}
+.ntab{padding:10px 20px;font-size:13px;font-weight:400;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.ntab.active{color:var(--charcoal);font-weight:500;border-bottom-color:var(--charcoal)}
+.notice-item{background:var(--white);border:.5px solid var(--border);margin-bottom:8px;overflow:hidden}
+.notice-head{padding:16px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .1s}
+.notice-head:hover{background:var(--cream)}
+.notice-cat{font-size:10px;font-weight:700;padding:2px 8px;letter-spacing:.06em;flex-shrink:0}
+.cat-notice{background:var(--charcoal);color:white}
+.cat-event{background:var(--live);color:white}
+.cat-delivery{background:var(--accent);color:white}
+.cat-update{background:#6B7280;color:white}
+.notice-title{font-size:13px;font-weight:500;flex:1}
+.notice-date{font-size:11px;color:var(--gray);flex-shrink:0}
+.notice-arrow{font-size:12px;color:var(--gray);transition:transform .2s;flex-shrink:0}
+.notice-arrow.open{transform:rotate(180deg)}
+.notice-body{display:none;padding:20px;border-top:.5px solid var(--border);font-size:13px;line-height:1.9;color:var(--gray);background:#FAFAFA}
+.notice-body.open{display:block}
+.notice-new{display:inline-block;background:var(--live);color:white;font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;margin-left:6px;vertical-align:middle}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-box">LB</div><div class="logo-name">라이브<span>박스</span></div></a>
+    <a href="index.html" style="font-size:12px;color:var(--gray)">← 홈으로</a>
+  </div>
+</header>
+<div class="page-wrap">
+  <div class="page-title">공지사항</div>
+  <div class="notice-tabs">
+    <div class="ntab active" onclick="filterNotice('all',this)">전체</div>
+    <div class="ntab" onclick="filterNotice('공지',this)">공지</div>
+    <div class="ntab" onclick="filterNotice('이벤트',this)">이벤트</div>
+    <div class="ntab" onclick="filterNotice('배송',this)">배송안내</div>
+  </div>
+  <div id="notice-list"></div>
+</div>
+<script>
+const notices = [
+  {id:1,cat:'이벤트',title:'🎉 라이브박스 오픈 기념 전 상품 10% 할인 이벤트',date:'2025.05.22',isNew:true,body:'라이브박스 자사몰 오픈을 기념하여 2025년 5월 31일까지 전 상품 10% 할인 이벤트를 진행합니다.\n쿠폰 코드: LIVEBOX2025\n\n· 적용 기간: 2025년 5월 22일 ~ 5월 31일\n· 적용 방법: 결제 시 쿠폰 코드 입력\n· 중복 할인 불가'},
+  {id:2,cat:'공지',title:'라이브박스 자사몰 오픈 안내',date:'2025.05.22',isNew:true,body:'안녕하세요, 라이브박스입니다.\n\n드디어 라이브박스 공식 자사몰이 오픈되었습니다.\n라이브 방송과 연동된 특가 상품을 더 편리하게 만나보세요.\n\n앞으로도 더 좋은 서비스로 찾아뵙겠습니다. 감사합니다.'},
+  {id:3,cat:'배송',title:'무료배송 정책 안내 (5만원 이상 주문 시)',date:'2025.05.20',isNew:false,body:'· 5만원 이상 주문 시 무료배송\n· 5만원 미만 주문 시 배송비 3,000원\n· 제주 및 도서산간 지역 추가 배송비 발생\n· 오늘출발: 평일 오후 2시 이전 주문 시 당일 출고'},
+  {id:4,cat:'공지',title:'교환/반품 안내',date:'2025.05.18',isNew:false,body:'· 상품 수령 후 7일 이내 교환/반품 가능\n· 단순 변심: 왕복 배송비 고객 부담\n· 불량/오배송: 전액 무료 처리\n· 교환/반품 신청: 1:1 문의 또는 고객센터 1588-0000'},
+  {id:5,cat:'이벤트',title:'리뷰 작성 시 1,000P 적립 이벤트',date:'2025.05.15',isNew:false,body:'구매 후 상품 리뷰 작성 시 1,000포인트를 적립해드립니다.\n\n· 텍스트 리뷰: 500P\n· 포토/영상 리뷰: 1,000P\n· 포인트 유효기간: 적립일로부터 1년'},
+];
+
+let currentFilter = 'all';
+function filterNotice(cat, el){
+  currentFilter = cat;
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderNotices();
+}
+function renderNotices(){
+  const filtered = currentFilter==='all' ? notices : notices.filter(n=>n.cat===currentFilter);
+  const catCls={공지:'cat-notice',이벤트:'cat-event',배송:'cat-delivery',업데이트:'cat-update'};
+  document.getElementById('notice-list').innerHTML = filtered.map(n=>`
+    <div class="notice-item">
+      <div class="notice-head" onclick="toggleNotice(${n.id})">
+        <span class="notice-cat ${catCls[n.cat]||'cat-update'}">${n.cat}</span>
+        <span class="notice-title">${n.title}${n.isNew?'<span class="notice-new">NEW</span>':''}</span>
+        <span class="notice-date">${n.date}</span>
+        <span class="notice-arrow" id="arrow-${n.id}">▼</span>
+      </div>
+      <div class="notice-body" id="body-${n.id}" style="white-space:pre-line">${n.body}</div>
+    </div>`).join('');
+}
+function toggleNotice(id){
+  const body=document.getElementById('body-'+id);
+  const arrow=document.getElementById('arrow-'+id);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  arrow.classList.toggle('open',!isOpen);
+}
+renderNotices();
+</script>
+</body>
+</html>

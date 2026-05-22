@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>위시리스트 — 라이브박스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#F7F5F2;--charcoal:#1E1E1E;--gray:#8A8885;--accent:#A8825A;--white:#FFF;--red:#C0392B;--live:#E8392A;--border:rgba(30,30,30,.1);--sans:'Noto Sans KR',sans-serif}
+body{font-family:var(--sans);background:var(--cream);color:var(--charcoal);font-size:14px}
+a{text-decoration:none;color:inherit}
+header{background:var(--white);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:34px;height:34px;background:var(--charcoal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;border-radius:4px}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-.02em}
+.logo-name span{color:var(--live)}
+.hdr-icon{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;cursor:pointer;border:none;background:none;font-family:var(--sans);color:var(--charcoal);transition:color .2s;position:relative}
+.hdr-icon:hover{color:var(--live)}
+.hdr-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5}
+.hdr-icon span{font-size:10px}
+.hdr-badge{position:absolute;top:3px;right:4px;background:var(--live);color:white;border-radius:50%;width:14px;height:14px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.page-wrap{max-width:1100px;margin:0 auto;padding:32px 40px 80px}
+.page-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px;padding-bottom:16px;border-bottom:.5px solid var(--border)}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.page-count{font-size:14px;color:var(--gray);font-weight:400}
+.wish-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.wish-card{background:var(--white);border:.5px solid var(--border);overflow:hidden;cursor:pointer;transition:all .2s}
+.wish-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(30,30,30,.1)}
+.wish-img{aspect-ratio:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.wish-img-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:transform .4s}
+.wish-card:hover .wish-img-inner{transform:scale(1.04)}
+.wish-img img{width:100%;height:100%;object-fit:cover}
+.wish-img-icon{font-size:32px;color:rgba(30,30,30,.1)}
+.wish-del-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gray);transition:all .2s}
+.wish-del-btn:hover{background:var(--red);color:white}
+.wish-info{padding:14px}
+.wish-brand{font-size:10px;color:var(--gray);letter-spacing:.06em;margin-bottom:4px}
+.wish-name{font-size:13px;font-weight:500;margin-bottom:10px;line-height:1.4}
+.price-row{display:flex;align-items:baseline;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.price-now{font-size:15px;font-weight:700}
+.price-orig{font-size:11px;color:var(--gray);text-decoration:line-through}
+.price-rate{font-size:11px;font-weight:700;color:var(--red)}
+.wish-card-btns{display:grid;grid-template-columns:1fr 2fr;gap:6px}
+.btn-del{background:none;border:1px solid var(--border);padding:9px;font-family:var(--sans);font-size:11px;cursor:pointer;color:var(--gray);transition:all .2s}
+.btn-del:hover{border-color:var(--red);color:var(--red)}
+.btn-cart{background:var(--charcoal);color:white;border:none;padding:9px;font-family:var(--sans);font-size:11px;font-weight:500;cursor:pointer;transition:background .2s;letter-spacing:.04em}
+.btn-cart:hover{background:var(--live)}
+.empty-state{text-align:center;padding:100px 20px;color:var(--gray)}
+.empty-state svg{width:48px;height:48px;stroke:var(--border);fill:none;stroke-width:1.2;margin:0 auto 16px}
+.empty-state p{font-size:14px;margin-bottom:20px}
+.btn-shop{display:inline-block;background:var(--charcoal);color:white;padding:12px 32px;font-size:13px;font-weight:500;letter-spacing:.08em;cursor:pointer;transition:background .2s;border:none;font-family:var(--sans)}
+.btn-shop:hover{background:var(--live)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--charcoal);color:white;padding:12px 24px;border-radius:4px;font-size:13px;z-index:999;opacity:0;transition:all .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-box">LB</div><div class="logo-name">라이브<span>박스</span></div></a>
+    <div style="display:flex;gap:4px">
+      <button class="hdr-icon" onclick="location.href='mypage.html'"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>마이페이지</span></button>
+      <button class="hdr-icon" onclick="location.href='cart.html'" style="position:relative"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>장바구니</span><span class="hdr-badge" id="cart-count">0</span></button>
+    </div>
+  </div>
+</header>
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="page-title">위시리스트 <span class="page-count" id="wish-count"></span></div>
+    <button onclick="addAllToCart()" style="background:none;border:1px solid var(--border);padding:8px 16px;font-family:var(--sans);font-size:12px;cursor:pointer;transition:all .2s;color:var(--charcoal)" onmouseover="this.style.background='var(--charcoal)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--charcoal)'">전체 장바구니 담기</button>
+  </div>
+  <div id="wish-content"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="store.js"></script>
+<script>
+function render(){
+  const ids = LB.getWishlist();
+  const products = LB.getActiveProducts();
+  const wished = ids.map(id=>products.find(p=>p.id===id)).filter(Boolean);
+  document.getElementById('wish-count').textContent = '('+wished.length+'개)';
+  document.getElementById('cart-count').textContent = LB.getCartCount();
+  const wrap = document.getElementById('wish-content');
+  if(!wished.length){
+    wrap.innerHTML=`<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><p>위시리스트가 비었어요.<br>마음에 드는 상품을 추가해보세요.</p><button class="btn-shop" onclick="location.href='index.html'">쇼핑하러 가기</button></div>`;
+    return;
+  }
+  wrap.innerHTML=`<div class="wish-grid">${wished.map((p,i)=>{
+    const disc=p.original&&p.original>p.price?Math.round((1-p.price/p.original)*100):0;
+    const imgHtml=p.images&&p.images[0]?`<img src="${p.images[0]}" alt="">`:`<div class="wish-img-icon">${LB.ICONS[i%LB.ICONS.length]}</div>`;
+    return `<div class="wish-card">
+      <div class="wish-img" onclick="location.href='product.html?id=${p.id}'">
+        <div class="wish-img-inner" style="background:${LB.BG[i%LB.BG.length]}">${imgHtml}</div>
+        <button class="wish-del-btn" onclick="event.stopPropagation();removeWish('${p.id}')">✕</button>
+      </div>
+      <div class="wish-info">
+        <div class="wish-brand">${p.brand||p.category||''}</div>
+        <div class="wish-name">${p.name}</div>
+        <div class="price-row">
+          <span class="price-now">${p.price.toLocaleString()}원</span>
+          ${disc?`<span class="price-orig">${p.original.toLocaleString()}원</span><span class="price-rate">${disc}%</span>`:''}
+        </div>
+        <div class="wish-card-btns">
+          <button class="btn-del" onclick="removeWish('${p.id}')">삭제</button>
+          <button class="btn-cart" onclick="addOne('${p.id}')">장바구니 담기</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+function removeWish(id){LB.toggleWishlist(id);render();showToast('위시리스트에서 제거됐어요.');}
+function addOne(id){LB.addToCart(id);document.getElementById('cart-count').textContent=LB.getCartCount();showToast('장바구니에 담았어요!');}
+function addAllToCart(){
+  const ids=LB.getWishlist();
+  if(!ids.length)return;
+  ids.forEach(id=>LB.addToCart(id));
+  document.getElementById('cart-count').textContent=LB.getCartCount();
+  showToast('전체 상품을 장바구니에 담았어요!');
+}
+let toastTimer;
+function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+render();
+window.addEventListener('cart-updated',()=>{document.getElementById('cart-count').textContent=LB.getCartCount();});
+</script>
+</body>
+</html>

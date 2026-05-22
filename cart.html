@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장바구니 — 라이브박스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#F7F5F2;--charcoal:#1E1E1E;--gray:#8A8885;--accent:#A8825A;--white:#FFF;--red:#C0392B;--live:#E8392A;--border:rgba(30,30,30,0.1);--sans:'Noto Sans KR',sans-serif}
+body{font-family:var(--sans);background:var(--cream);color:var(--charcoal);font-size:14px}
+a{text-decoration:none;color:inherit}
+header{background:var(--white);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:34px;height:34px;background:var(--charcoal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;border-radius:4px}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-.02em}
+.logo-name span{color:var(--live)}
+.page-wrap{max-width:1100px;margin:0 auto;padding:32px 32px 80px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+.page-title{font-size:20px;font-weight:700;margin-bottom:20px;grid-column:1/-1;letter-spacing:-.02em}
+.cart-panel{background:var(--white);border:.5px solid var(--border)}
+.cart-header{display:flex;align-items:center;padding:16px 20px;border-bottom:.5px solid var(--border);gap:12px}
+.cart-header input[type=checkbox]{width:15px;height:15px;accent-color:var(--charcoal);cursor:pointer}
+.cart-header span{font-size:13px;font-weight:500}
+.cart-item{display:flex;align-items:center;gap:16px;padding:20px;border-bottom:.5px solid var(--border);transition:background .1s}
+.cart-item:last-child{border-bottom:none}
+.cart-item:hover{background:#FAFAFA}
+.item-check{flex-shrink:0}
+.item-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--charcoal);cursor:pointer}
+.item-img{width:80px;height:80px;background:var(--cream);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
+.item-img img{width:100%;height:100%;object-fit:cover}
+.item-img-icon{font-size:11px;color:var(--gray);font-weight:300}
+.item-info{flex:1;min-width:0}
+.item-brand{font-size:10px;color:var(--gray);letter-spacing:.06em;margin-bottom:3px}
+.item-name{font-size:13px;font-weight:500;margin-bottom:8px;cursor:pointer;line-height:1.4}
+.item-name:hover{color:var(--live)}
+.qty-ctrl{display:flex;align-items:center;border:1px solid var(--border);width:fit-content}
+.qty-btn{width:28px;height:28px;border:none;background:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;color:var(--charcoal)}
+.qty-btn:hover{background:var(--cream)}
+.qty-num{width:36px;height:28px;border:none;border-left:1px solid var(--border);border-right:1px solid var(--border);text-align:center;font-family:var(--sans);font-size:13px;font-weight:500;outline:none}
+.item-price{text-align:right;flex-shrink:0}
+.item-price-main{font-size:16px;font-weight:700;display:block;margin-bottom:4px}
+.item-del{font-size:11px;color:var(--gray);cursor:pointer;border:none;background:none;font-family:var(--sans);transition:color .2s;display:block;margin-left:auto}
+.item-del:hover{color:var(--red)}
+.empty-cart{padding:80px 20px;text-align:center;color:var(--gray)}
+.empty-cart p{font-size:14px;margin-bottom:20px}
+.summary-panel{background:var(--white);border:.5px solid var(--border);padding:24px;position:sticky;top:80px}
+.summary-title{font-size:15px;font-weight:700;margin-bottom:20px;padding-bottom:16px;border-bottom:.5px solid var(--border)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:13px}
+.summary-row.total{font-size:17px;font-weight:700;padding-top:16px;border-top:.5px solid var(--border);margin-top:8px;color:var(--live)}
+.summary-free{font-size:11px;color:var(--accent);text-align:center;margin-bottom:16px}
+.btn-checkout{width:100%;background:var(--live);color:white;border:none;padding:15px;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.06em;transition:background .2s;margin-bottom:10px}
+.btn-checkout:hover{background:#C82A1A}
+.btn-continue{width:100%;background:none;border:1.5px solid var(--border);color:var(--charcoal);padding:12px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-continue:hover{border-color:var(--charcoal)}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-box">LB</div><div class="logo-name">라이브<span>박스</span></div></a>
+    <span style="font-size:13px;color:var(--gray)">장바구니</span>
+  </div>
+</header>
+<div class="page-wrap">
+  <div class="page-title" id="cart-title">장바구니</div>
+  <div id="cart-list"></div>
+  <div class="summary-panel">
+    <div class="summary-title">주문 요약</div>
+    <div class="summary-row"><span>상품금액</span><span id="sum-goods">0원</span></div>
+    <div class="summary-row"><span>배송비</span><span id="sum-ship">무료</span></div>
+    <div class="summary-row total"><span>총 결제금액</span><span id="sum-total">0원</span></div>
+    <div class="summary-free" id="free-msg"></div>
+    <button class="btn-checkout" onclick="goCheckout()">구매하기</button>
+    <button class="btn-continue" onclick="location.href='index.html'">쇼핑 계속하기</button>
+  </div>
+</div>
+<script src="store.js"></script>
+<script>
+function render(){
+  const cart = LB.getCart();
+  const products = LB.getActiveProducts();
+  const title = document.getElementById('cart-title');
+  const list = document.getElementById('cart-list');
+
+  if(!cart.length){
+    title.textContent='장바구니 (0)';
+    list.innerHTML=`<div class="cart-panel"><div class="empty-cart"><p>장바구니가 비었어요.</p><a href="index.html" style="color:var(--live);font-size:13px;border-bottom:1px solid var(--live);padding-bottom:2px">쇼핑 계속하기</a></div></div>`;
+    updateSummary(0);
+    return;
+  }
+
+  const items = cart.map(item=>{
+    const p = products.find(x=>x.id===item.productId);
+    if(!p) return null;
+    return {...item, product:p};
+  }).filter(Boolean);
+
+  title.textContent=`장바구니 (${items.length})`;
+  list.innerHTML=`<div class="cart-panel">
+    <div class="cart-header">
+      <input type="checkbox" id="check-all" onchange="toggleAll(this.checked)" checked>
+      <span>전체선택 (${items.length}/${items.length})</span>
+    </div>
+    ${items.map(item=>`
+      <div class="cart-item" data-id="${item.productId}">
+        <div class="item-check"><input type="checkbox" class="item-check-input" data-id="${item.productId}" checked onchange="updateSummaryFromChecked()"></div>
+        <div class="item-img" onclick="location.href='product.html?id=${item.productId}'">
+          ${item.product.images&&item.product.images[0]?`<img src="${item.product.images[0]}" alt="">`:`<div class="item-img-icon">${item.productId.slice(-4)}</div>`}
+        </div>
+        <div class="item-info">
+          <div class="item-brand">${item.product.brand||item.product.category}</div>
+          <div class="item-name" onclick="location.href='product.html?id=${item.productId}'">${item.product.name}</div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty('${item.productId}',-1)">−</button>
+            <input type="number" class="qty-num" value="${item.qty}" min="1" data-id="${item.productId}" onchange="setQty('${item.productId}',this.value)">
+            <button class="qty-btn" onclick="changeQty('${item.productId}',1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">
+          <span class="item-price-main">${(item.product.price*item.qty).toLocaleString()}원</span>
+          <button class="item-del" onclick="removeItem('${item.productId}')">삭제</button>
+        </div>
+      </div>`).join('')}
+  </div>`;
+  updateSummaryFromChecked();
+}
+
+function updateSummary(total){
+  const ship = total>=50000 ? 0 : (total>0?3000:0);
+  document.getElementById('sum-goods').textContent = total.toLocaleString()+'원';
+  document.getElementById('sum-ship').textContent = ship===0&&total>0?'무료':(ship>0?ship.toLocaleString()+'원':'0원');
+  document.getElementById('sum-total').textContent = (total+ship).toLocaleString()+'원';
+  const freeMsg = document.getElementById('free-msg');
+  if(total>0&&total<50000) freeMsg.textContent=`${(50000-total).toLocaleString()}원 더 담으면 무료배송!`;
+  else freeMsg.textContent='';
+}
+
+function updateSummaryFromChecked(){
+  const checked = [...document.querySelectorAll('.item-check-input:checked')].map(el=>el.dataset.id);
+  const cart = LB.getCart();
+  const products = LB.getActiveProducts();
+  const total = cart.filter(item=>checked.includes(item.productId)).reduce((s,item)=>{
+    const p = products.find(x=>x.id===item.productId);
+    return s+(p?p.price*item.qty:0);
+  },0);
+  updateSummary(total);
+}
+
+function toggleAll(checked){
+  document.querySelectorAll('.item-check-input').forEach(el=>el.checked=checked);
+  updateSummaryFromChecked();
+}
+
+function changeQty(id, delta){
+  const cart = LB.getCart();
+  const item = cart.find(x=>x.productId===id);
+  if(!item) return;
+  item.qty = Math.max(1, item.qty+delta);
+  LB.saveCart(cart);
+  render();
+}
+
+function setQty(id, val){
+  const cart = LB.getCart();
+  const item = cart.find(x=>x.productId===id);
+  if(!item) return;
+  item.qty = Math.max(1, parseInt(val)||1);
+  LB.saveCart(cart);
+  render();
+}
+
+function removeItem(id){
+  LB.saveCart(LB.getCart().filter(x=>x.productId!==id));
+  render();
+}
+
+function goCheckout(){
+  const checked = [...document.querySelectorAll('.item-check-input:checked')].map(el=>el.dataset.id);
+  if(!checked.length){ alert('구매할 상품을 선택해주세요.'); return; }
+  sessionStorage.setItem('lb_checkout_items', JSON.stringify(checked));
+  location.href='checkout.html';
+}
+
+render();
+window.addEventListener('cart-updated', render);
+</script>
+</body>
+</html>
