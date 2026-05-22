@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "routes": [
+    {"src":"/","dest":"/index.html"},
+    {"src":"/admin","dest":"/admin.html"},
+    {"src":"/product","dest":"/product.html"},
+    {"src":"/cart","dest":"/cart.html"},
+    {"src":"/checkout","dest":"/checkout.html"},
+    {"src":"/complete","dest":"/complete.html"},
+    {"src":"/list","dest":"/list.html"},
+    {"src":"/mypage","dest":"/mypage.html"}
+  ]
+}

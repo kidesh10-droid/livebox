@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 — 라이브박스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#F7F5F2;--charcoal:#1E1E1E;--gray:#8A8885;--accent:#A8825A;--white:#FFF;--red:#C0392B;--live:#E8392A;--border:rgba(30,30,30,.1);--serif:'Cormorant Garamond',serif;--sans:'Noto Sans KR',sans-serif}
+body{font-family:var(--sans);background:var(--cream);color:var(--charcoal);font-size:14px}
+a{text-decoration:none;color:inherit}
+header{background:var(--white);border-bottom:.5px solid var(--border);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-box{width:34px;height:34px;background:var(--charcoal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;border-radius:4px}
+.logo-name{font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--charcoal)}
+.logo-name span{color:var(--live)}
+.hdr-icon{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;cursor:pointer;border:none;background:none;font-family:var(--sans);color:var(--charcoal);transition:color .2s;position:relative}
+.hdr-icon:hover{color:var(--live)}
+.hdr-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5}
+.hdr-icon span{font-size:10px}
+.hdr-badge{position:absolute;top:3px;right:4px;background:var(--live);color:white;border-radius:50%;width:14px;height:14px;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.page-wrap{max-width:1100px;margin:0 auto;padding:32px 40px 80px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}
+/* SIDEBAR */
+.my-sidebar{background:var(--white);border:.5px solid var(--border)}
+.my-profile{padding:24px 20px;border-bottom:.5px solid var(--border);text-align:center}
+.my-avatar{width:56px;height:56px;background:var(--charcoal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:white;font-weight:700}
+.my-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.my-grade{font-size:11px;color:var(--accent);letter-spacing:.06em;font-weight:500}
+.my-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:.5px solid var(--border)}
+.my-stat{padding:12px 8px;text-align:center;border-right:.5px solid var(--border)}
+.my-stat:last-child{border-right:none}
+.my-stat-num{font-size:18px;font-weight:700;color:var(--charcoal);display:block}
+.my-stat-label{font-size:10px;color:var(--gray);margin-top:2px}
+.my-menu{padding:8px 0}
+.my-menu-item{padding:11px 20px;font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px;border-left:2px solid transparent}
+.my-menu-item:hover{background:var(--cream);color:var(--live)}
+.my-menu-item.active{background:rgba(232,57,42,.05);color:var(--live);border-left-color:var(--live);font-weight:500}
+.my-menu-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0}
+/* CONTENT */
+.my-content{}
+.content-box{background:var(--white);border:.5px solid var(--border);margin-bottom:16px;overflow:hidden}
+.content-head{padding:16px 20px;border-bottom:.5px solid var(--border);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+.content-head-sub{font-size:12px;font-weight:400;color:var(--gray)}
+/* ORDER LIST */
+.order-item{padding:18px 20px;border-bottom:.5px solid var(--border);cursor:pointer;transition:background .1s}
+.order-item:last-child{border-bottom:none}
+.order-item:hover{background:var(--cream)}
+.order-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.order-id{font-size:12px;font-family:monospace;font-weight:600;color:var(--charcoal)}
+.order-date{font-size:11px;color:var(--gray)}
+.order-products{font-size:13px;color:var(--charcoal);margin-bottom:8px;font-weight:400}
+.order-bottom{display:flex;align-items:center;justify-content:space-between}
+.order-amount{font-size:15px;font-weight:700}
+.status-pill{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em}
+.status-결제완료{background:#EFF6FF;color:#1D4ED8}
+.status-배송중{background:#F0F9FF;color:#0369A1}
+.status-배송완료{background:#F0FDF4;color:#15803D}
+.status-취소{background:#FFF1F2;color:#BE123C}
+/* WISHLIST */
+.wish-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:18px}
+.wish-card{cursor:pointer;border:.5px solid var(--border);overflow:hidden;transition:all .2s}
+.wish-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(30,30,30,.08)}
+.wish-img{aspect-ratio:1;background:var(--cream);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:24px;font-style:italic;color:rgba(30,30,30,.12);overflow:hidden}
+.wish-img img{width:100%;height:100%;object-fit:cover}
+.wish-info{padding:10px 12px}
+.wish-name{font-size:12px;font-weight:500;margin-bottom:4px;line-height:1.4}
+.wish-price{font-size:13px;font-weight:700}
+.wish-del{width:100%;padding:8px;border:none;background:var(--cream);font-family:var(--sans);font-size:11px;color:var(--gray);cursor:pointer;transition:all .2s;margin-top:4px}
+.wish-del:hover{background:var(--red);color:white}
+/* EMPTY */
+.empty-box{padding:48px 20px;text-align:center;color:var(--gray)}
+.empty-box p{font-size:13px;margin-bottom:16px}
+.empty-box a{color:var(--live);font-size:12px;border-bottom:1px solid var(--live);padding-bottom:2px}
+/* SUMMARY CARDS */
+.summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:.5px solid var(--border)}
+.summary-card{padding:16px;text-align:center;border-right:.5px solid var(--border);cursor:pointer;transition:background .15s}
+.summary-card:last-child{border-right:none}
+.summary-card:hover{background:var(--cream)}
+.sc-num{font-size:20px;font-weight:700;color:var(--charcoal);display:block;margin-bottom:3px}
+.sc-label{font-size:10px;color:var(--gray)}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-box">LB</div><div class="logo-name">라이브<span>박스</span></div></a>
+    <div style="display:flex;gap:4px">
+      <button class="hdr-icon" onclick="location.href='cart.html'" style="position:relative">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span>장바구니</span>
+        <span class="hdr-badge" id="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="page-wrap">
+  <!-- SIDEBAR -->
+  <div class="my-sidebar">
+    <div class="my-profile">
+      <div class="my-avatar">고</div>
+      <div class="my-name">라이브박스 고객님</div>
+      <div class="my-grade">STANDARD MEMBER</div>
+    </div>
+    <div class="my-stats">
+      <div class="my-stat"><span class="my-stat-num" id="stat-orders">0</span><div class="my-stat-label">주문</div></div>
+      <div class="my-stat"><span class="my-stat-num" id="stat-wish">0</span><div class="my-stat-label">위시</div></div>
+      <div class="my-stat"><span class="my-stat-num" id="stat-cart">0</span><div class="my-stat-label">장바구니</div></div>
+    </div>
+    <div class="my-menu">
+      <div class="my-menu-item active" id="menu-orders" onclick="switchTab('orders')">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        주문내역
+      </div>
+      <div class="my-menu-item" id="menu-wish" onclick="switchTab('wish')">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        위시리스트
+      </div>
+      <div class="my-menu-item" onclick="location.href='cart.html'">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        장바구니
+      </div>
+      <div class="my-menu-item" onclick="location.href='index.html'">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        홈으로
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="my-content">
+    <!-- ORDERS TAB -->
+    <div id="tab-orders">
+      <div class="content-box">
+        <div class="content-head">주문내역 <span class="content-head-sub" id="order-count-text">총 0건</span></div>
+        <div class="summary-cards">
+          <div class="summary-card"><span class="sc-num" id="sc-결제완료">0</span><div class="sc-label">결제완료</div></div>
+          <div class="summary-card"><span class="sc-num" id="sc-배송중">0</span><div class="sc-label">배송중</div></div>
+          <div class="summary-card"><span class="sc-num" id="sc-배송완료">0</span><div class="sc-label">배송완료</div></div>
+          <div class="summary-card"><span class="sc-num" id="sc-취소">0</span><div class="sc-label">취소/반품</div></div>
+        </div>
+        <div id="order-list"></div>
+      </div>
+    </div>
+    <!-- WISHLIST TAB -->
+    <div id="tab-wish" style="display:none">
+      <div class="content-box">
+        <div class="content-head">위시리스트 <span class="content-head-sub" id="wish-count-text">총 0개</span></div>
+        <div class="wish-grid" id="wish-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="store.js"></script>
+<script>
+function switchTab(tab){
+  ['orders','wish'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = t===tab?'':'none';
+    document.getElementById('menu-'+t).classList.toggle('active', t===tab);
+  });
+}
+
+function renderStats(){
+  const orders = LB.getOrders();
+  const wish = LB.getWishlist();
+  const cart = LB.getCartCount();
+  document.getElementById('stat-orders').textContent = orders.length;
+  document.getElementById('stat-wish').textContent = wish.length;
+  document.getElementById('stat-cart').textContent = cart;
+  document.getElementById('cart-count').textContent = cart;
+  ['결제완료','배송중','배송완료','취소'].forEach(s=>{
+    document.getElementById('sc-'+s).textContent = orders.filter(o=>o.status===s).length;
+  });
+}
+
+function renderOrders(){
+  const orders = LB.getOrders();
+  document.getElementById('order-count-text').textContent = '총 '+orders.length+'건';
+  const list = document.getElementById('order-list');
+  if(!orders.length){
+    list.innerHTML='<div class="empty-box"><p>주문 내역이 없어요.</p><a href="index.html">쇼핑하러 가기 →</a></div>';
+    return;
+  }
+  const statusCls={'결제완료':'status-결제완료','배송중':'status-배송중','배송완료':'status-배송완료','취소':'status-취소'};
+  list.innerHTML = orders.map(o=>`
+    <div class="order-item">
+      <div class="order-top">
+        <span class="order-id">${o.id}</span>
+        <span class="order-date">${o.date||''}</span>
+      </div>
+      <div class="order-products">${(o.items||[{name:o.product}]).map(i=>i.name).join(', ')}</div>
+      <div class="order-bottom">
+        <span class="order-amount">${(o.amount||0).toLocaleString()}원</span>
+        <span class="status-pill ${statusCls[o.status]||''}">${o.status}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderWishlist(){
+  const ids = LB.getWishlist();
+  const products = LB.getActiveProducts();
+  const wished = ids.map(id=>products.find(p=>p.id===id)).filter(Boolean);
+  document.getElementById('wish-count-text').textContent = '총 '+wished.length+'개';
+  const grid = document.getElementById('wish-grid');
+  if(!wished.length){
+    grid.innerHTML='<div class="empty-box" style="grid-column:1/-1"><p>위시리스트가 비었어요.</p><a href="index.html">쇼핑하러 가기 →</a></div>';
+    return;
+  }
+  grid.innerHTML = wished.map((p,i)=>`
+    <div class="wish-card">
+      <div class="wish-img" onclick="location.href='product.html?id=${p.id}'" style="cursor:pointer">
+        ${p.images&&p.images[0]?`<img src="${p.images[0]}">`:`${LB.ICONS[i%LB.ICONS.length]}`}
+      </div>
+      <div class="wish-info">
+        <div class="wish-name">${p.name}</div>
+        <div class="wish-price">${p.price.toLocaleString()}원</div>
+        <button class="wish-del" onclick="removeWish('${p.id}')">위시리스트 제거</button>
+      </div>
+    </div>`).join('');
+}
+
+function removeWish(id){
+  LB.toggleWishlist(id);
+  renderWishlist();
+  renderStats();
+}
+
+const tabParam = new URLSearchParams(location.search).get('tab');
+if(tabParam==='wish') switchTab('wish');
+
+renderStats();
+renderOrders();
+renderWishlist();
+</script>
+</body>
+</html>
